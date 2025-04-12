@@ -1,11 +1,6 @@
 pipeline {
     agent any
     stages {
-        stage('Clone Repository') {
-            steps {
-                git 'https://github.com/ShvetsDima/JenkinsTest.git'
-            }
-        }
         stage('Install Apache') {
             steps {
                 sshagent (credentials: ['remote-vm-ssh']) {
