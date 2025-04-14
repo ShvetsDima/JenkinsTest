@@ -38,6 +38,8 @@ pipeline {
                         LOG_FILE="/var/log/apache2/access.log"
                     elif [ -f /var/log/httpd/access_log ]; then
                         LOG_FILE="/var/log/httpd/access_log"
+                    elif [ -f /var/log/apache2/access_log ]; then
+                        LOG_FILE="/var/log/apache2/access_log"
                     else
                         echo "Log file not found"
                         exit 1
