@@ -1,14 +1,18 @@
 pipeline {
     agent any
     
+    environment {
+        SUDO_PASSWORD = '123456'
+    }
+    
     stages {
         stage('Install Apache2') {
             steps {
                 sh '''
                     if command -v apt-get >/dev/null 2>&1; then
-                        sudo apt-get update && sudo apt-get install -y apache2
+                        echo "$SUDO_PASSWORD" | sudo -S apt-get update && sudo -S apt-get install -y apache2
                     elif command -v yum >/dev/null 2>&1; then
-                        sudo yum update -y && sudo yum install -y httpd
+                        echo "$SUDO_PASSWORD" | sudo -S yum update -y && sudo -S yum install -y httpd
                     else
                         echo "Unsupported package manager"
                         exit 1
@@ -21,10 +25,10 @@ pipeline {
             steps {
                 sh '''
                     if command -v systemctl >/dev/null 2>&1; then
-                        sudo systemctl start apache2 || sudo systemctl start httpd
-                        sudo systemctl enable apache2 || sudo systemctl enable httpd
+                        echo "$SUDO_PASSWORD" | sudo -S systemctl start apache2 || sudo -S systemctl start httpd
+                        echo "$SUDO_PASSWORD" | sudo -S systemctl enable apache2 || sudo -S systemctl enable httpd
                     else
-                        sudo service apache2 start || sudo service httpd start
+                        echo "$SUDO_PASSWORD" | sudo -S service apache2 start || sudo -S service httpd start
                     fi
                 '''
             }
