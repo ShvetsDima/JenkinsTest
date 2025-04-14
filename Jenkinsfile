@@ -33,21 +33,22 @@ pipeline {
         stage('Check Apache2 Logs') {
             steps {
                 sh '''
-                    # Determine log file location based on OS
-                    if [ -f /var/log/apache2/access.log ]; then
-                        LOG_FILE="/var/log/apache2/access.log"
-                    elif [ -f /var/log/httpd/access_log ]; then
-                        LOG_FILE="/var/log/httpd/access_log"
-                    elif [ -f /var/log/apache2/access_log ]; then
-                        LOG_FILE="/var/log/apache2/access_log"
-                    else
-                        echo "Log file not found"
+                    # Search for the access log file using locate command
+                    ACCESS_LOG=$(sudo locate access.log | grep -E "/apache2/|/httpd/" | head -n 1)
+                    
+                    if [ -z "$ACCESS_LOG" ]; then
+                        # If access.log is not found, search for access_log
+                        ACCESS_LOG=$(sudo locate access_log | grep -E "/apache2/|/httpd/" | head -n 1)
+                    fi
+                    
+                    if [ -z "$ACCESS_LOG" ]; then
+                        echo "Access log file not found"
                         exit 1
                     fi
                     
                     # Check for 4xx and 5xx errors
-                    echo "Checking for 4xx and 5xx errors in ${LOG_FILE}"
-                    grep -E "HTTP/[0-9.]+ [45][0-9]{2}" ${LOG_FILE} || echo "No 4xx/5xx errors found"
+                    echo "Checking for 4xx and 5xx errors in ${ACCESS_LOG}"
+                    sudo grep -E "HTTP/[0-9.]+ [45][0-9]{2}" ${ACCESS_LOG} || echo "No 4xx/5xx errors found"
                 '''
             }
         }
