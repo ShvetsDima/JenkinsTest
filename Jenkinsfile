@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     environment {
-        SUDO_PASSWORD = '123456'
+        SUDO_PASSWORD = 'jenkins'
     }
     
     stages {
